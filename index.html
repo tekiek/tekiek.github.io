@@ -186,9 +186,15 @@
 			  function playTrack(trackSrc) {
 					els.audioPlayer.src = trackSrc;
 					els.audioPlayer.currentTime = 10;
-					els.audioPlayer.play().then(() => {
+					// els.audioPlayer.play().then(() => {
+					// 	countdown();
+					// });
+					els.audioPlayer.play();
+					els.audioPlayer.onplay = function() {
+						console.log('!!!!!!!!!!!!!!')
+						els.audioPlayer.style.display = "none";
 						countdown();
-					});
+					}
 			  }
 
 			  function timeRanOut() {
