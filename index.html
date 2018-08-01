@@ -41,9 +41,6 @@
 
 			<!-- Middle section / buttons -->
 			<div id="middleSection" class="xs-mb2 xs-text-center">
-				<audio id="audioPlayer" controls class="xxs-hide">
-					<source type="audio/mpeg">
-				</audio>
 
 				<button id="startButton" class='button xs-my2 xs-py2 xs-px6 xs-text-2'>
 					Start Game
@@ -52,6 +49,11 @@
 				<button id="nextButton" class='xs-hide button xs-my2 xs-py2 xs-px6 xs-text-2'>
 					Next Round
 				</button>
+
+				<audio id="audioPlayer" controls class="xs-my2 xs-hide">
+					<source type="audio/mpeg">
+				</audio>
+
 				<div id="songDetails" class="text-gray-lighter bold xs-hide"></div>
 			</div>
 
@@ -83,6 +85,7 @@
 
 				function init() {
 					els.startButton.classList.add('xs-hide');
+					els.audioPlayer.classList.remove('xs-hide');
 					els.buttonWrapper.style.display = 'block';
 
 					createYearBtns();
