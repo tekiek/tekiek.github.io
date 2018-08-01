@@ -1,0 +1,217 @@
+<html>
+	<head>
+			<meta name="viewport" content="width=device-width, initial-scale=1">
+			<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+			<script src="odometer.min.js"></script>
+			<link rel="stylesheet" type="text/css" href="odometer-theme-minimal.css">
+			<link rel="stylesheet" type="text/css" href="https://www.buzzfeed.com/static-assets/solid/solid.2.10.6.min.css">
+			<style>
+				#countdownClock {
+					xfont-size: 96px;
+				}
+				.yearBtn {
+					min-width: 120px;
+				}
+				#middleSection {
+					min-height: 100px;
+				}
+			</style>
+	</head>
+	<body class="fill-gray-lighter">
+
+		<div class="xs-py2 xs-px1 sm-px3 lg-px6">
+			
+			<!-- Top Bar -->
+			<div class="clearfix xs-text-2 sm-text-1 bold text-gray-lighter xs-border-bottom xs-pb1"> 
+				<div class="col xs-col-4">
+					<span>Score:</span>
+					<span id="gameScore" class="odometer">0</span>
+				</div>
+
+				<div class="col xs-col-4 xs-text-center">
+					<div id="countdownClock" class="bold text-blue odometer "></div>
+				</div>
+
+				<div class="col xs-col-4 xs-text-right">
+					<span>Round:</span>
+					<span id="gameRound" class="odometer">0</span>
+					<span>/ 10</span>
+				</div>
+			</div>
+
+			<!-- Middle section / buttons -->
+			<div id="middleSection" class="xs-mb2 xs-text-center">
+				<audio id="audioPlayer" controls class="xs-hide">
+					<source type="audio/mpeg">
+				</audio>
+
+				<button id="startButton" class='button xs-my2 xs-py2 xs-px6 xs-text-2'>
+					Start Game
+				</button>
+
+				<button id="nextButton" class='xs-hide button xs-my2 xs-py2 xs-px6 xs-text-2'>
+					Next Round
+				</button>
+				<div id="songDetails" class="text-gray-lighter bold xs-hide"></div>
+			</div>
+
+			<!-- Years buttons -->
+			<div id="btnYears" class="xs-border-lighter xs-p05 lg-p2 xs-my2 xs-text-center" style="display:none;"></div>
+		</div>
+
+		<script>
+				let years = ["1983-1987", "1988", "1989", "1990", "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2002", "2003", "2004", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018"];
+				let timer;
+				let trackYear;
+				let timeCounter;
+				let gameScore = 0;
+				let gameRound = 0;
+				let els = {
+					'startButton': document.getElementById("startButton"),
+					'nextButton': document.getElementById("nextButton"),
+					'songDetails': document.getElementById("songDetails"),
+					'buttonWrapper': document.getElementById("btnYears"),
+					'countdownClock': document.getElementById("countdownClock"),
+					'audioPlayer': document.getElementById("audioPlayer"),
+					'gameScore': document.getElementById("gameScore"),
+					'gameRound': document.getElementById("gameRound"),
+					'yearButtons': []
+				};
+
+				els.startButton.addEventListener('click', init);
+				els.nextButton.addEventListener('click', startRound);
+
+				function init() {
+					els.startButton.classList.add('xs-hide');
+					els.buttonWrapper.style.display = 'block';
+
+					createYearBtns();
+					startRound();
+				}
+
+				function startRound() {
+					els.gameRound.innerHTML = gameRound += 1;
+					els.nextButton.classList.add('xs-hide');
+					els.songDetails.classList.add('xs-hide');
+
+					resetYearButtons();
+					getRandomTrack();
+				}
+
+				/*
+				 * params:
+				 *	- yearSelected
+				 *  - correctYear
+				 *	- timeLeft
+				 */
+				function updateScore(params) {
+					let score = 10;
+					let yearDiff = Math.abs(years.indexOf(params.yearSelected) - years.indexOf(params.correctYear));
+
+					console.log('params', params);
+					score = score - (2 * yearDiff);
+					console.log('score', score);
+					score = score * ((params.timeLeft / 100) + 1);
+					console.log('score', score);
+					score = Math.max(0, score);
+					console.log('score', score);
+					gameScore += score;
+					console.log('gameScore', gameScore);
+					els.gameScore.innerHTML = gameScore.toFixed(2);
+
+					console.log('yearDiff', yearDiff);
+					console.log('updateScore', params)
+				}
+
+				function createYearBtns() {
+					years.forEach(function(year) {
+						let yearBtn = $("<button data-year=" + year + " class='yearBtn button xs-m05 xs-px2 xs-text-3'>" + year + "</button>");
+						$(els.buttonWrapper).append(yearBtn);
+						$(yearBtn).click({ 'el': yearBtn }, yearSelected);
+						els.yearButtons.push(yearBtn);
+					});
+				}
+
+				function resetYearButtons() {
+					els.yearButtons.forEach(function(btn) {
+						btn[0].classList.remove('button--disabled');
+						btn[0].classList.remove('button--negative');
+					})
+				}
+				
+				function yearSelected(r) {
+					let selectedBtn = r.data.el[0];
+					let selectedYear = selectedBtn.dataset.year;
+					let correctYearBtn = document.querySelectorAll("[data-year='" + trackYear + "']")[0];
+
+					console.log('selectedYear', selectedYear);
+					console.log('correctYearBtn', correctYearBtn);
+
+					els.audioPlayer.pause();
+					clearInterval(timer);
+					
+					selectedBtn.classList.add('button--disabled');
+					correctYearBtn.classList.add('button--negative');
+					
+					els.songDetails.classList.remove('xs-hide');
+					els.nextButton.classList.remove('xs-hide');
+
+					updateScore({
+						'yearSelected': selectedYear,
+						'correctYear': trackYear,
+						'timeLeft': timeCounter
+					});
+				}
+
+				function getRandomTrack() {
+					$.ajax("http://phish.in/api/v1/random-show").done(function(r) {
+						let tracks = r.data.tracks;
+						let rndTrack = tracks[Math.floor(Math.random() * tracks.length)];
+						let trackSrc = rndTrack.mp3;
+						trackYear = r.data.date.split('-')[0];
+
+						console.log('r.data', r.data);
+						console.log('date', trackYear);
+						
+						console.log('rndTrack', rndTrack);
+						console.log('mp3Src', trackSrc);
+						
+						els.songDetails.innerHTML = rndTrack.title + " | " + r.data.date;
+
+						playTrack(trackSrc);
+						//ountdown();
+				  });
+				}
+
+			  function playTrack(trackSrc) {
+					els.audioPlayer.src = trackSrc;
+					els.audioPlayer.currentTime = 10;
+					els.audioPlayer.play().then(() => {
+						countdown();
+					});
+			  }
+
+			  function timeRanOut() {
+			  	clearInterval(timer);
+			  	els.audioPlayer.pause();
+
+			  	updateScore({
+						'yearSelected': '',
+						'correctYear': trackYear,
+						'timeLeft': 0
+					});
+			  }
+
+				function countdown() {
+					timeCounter = 60;
+
+					els.countdownClock.innerHTML = timeCounter;
+					timer = setInterval(function() {
+				    els.countdownClock.innerHTML = timeCounter--;
+				    if (timeCounter == -1) timeRanOut();
+					}, 1000);
+				}
+
+		</script>
+	</body>
+</html>
