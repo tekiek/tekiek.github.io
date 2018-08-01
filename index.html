@@ -10,7 +10,7 @@
 					xfont-size: 96px;
 				}
 				.yearBtn {
-					min-width: 120px;
+					min-width: 110px;
 				}
 				#middleSection {
 					min-height: 100px;
@@ -33,7 +33,7 @@
 				</div>
 
 				<div class="col xs-col-4 xs-text-right">
-					<span>Round:</span>
+					<span class="xs-hide sm-inline-block">Round:</span>
 					<span id="gameRound" class="odometer">0</span>
 					<span>/ 10</span>
 				</div>
@@ -41,7 +41,7 @@
 
 			<!-- Middle section / buttons -->
 			<div id="middleSection" class="xs-mb2 xs-text-center">
-				<audio id="audioPlayer" controls class="xs-hide">
+				<audio id="audioPlayer" class="xxs-hide">
 					<source type="audio/mpeg">
 				</audio>
 
@@ -56,7 +56,7 @@
 			</div>
 
 			<!-- Years buttons -->
-			<div id="btnYears" class="xs-border-lighter xs-p05 lg-p2 xs-my2 xs-text-center" style="display:none;"></div>
+			<div id="btnYears" class="xs-p05 lg-p2 xs-my2 xs-pt2 xs-text-center xs-border-top" style="display:none;"></div>
 		</div>
 
 		<script>
@@ -125,7 +125,7 @@
 
 				function createYearBtns() {
 					years.forEach(function(year) {
-						let yearBtn = $("<button data-year=" + year + " class='yearBtn button xs-m05 xs-px2 xs-text-3'>" + year + "</button>");
+						let yearBtn = $("<button data-year=" + year + " class='yearBtn button xs-mr05 xs-mb05 xs-text-3'>" + year + "</button>");
 						$(els.buttonWrapper).append(yearBtn);
 						$(yearBtn).click({ 'el': yearBtn }, yearSelected);
 						els.yearButtons.push(yearBtn);
@@ -164,7 +164,7 @@
 				}
 
 				function getRandomTrack() {
-					$.ajax("http://phish.in/api/v1/random-show").done(function(r) {
+					$.ajax("https://phish.in/api/v1/random-show").done(function(r) {
 						let tracks = r.data.tracks;
 						let rndTrack = tracks[Math.floor(Math.random() * tracks.length)];
 						let trackSrc = rndTrack.mp3;
