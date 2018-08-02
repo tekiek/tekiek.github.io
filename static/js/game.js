@@ -247,7 +247,7 @@ function getScores() {
 	els.highScores.innerHTML = '';
 
 
-	$.ajax("http://dreamlo.com/lb/5b61e48e191a8b0bcc77d341/json/10").done(function(r) {
+	$.ajax("https://dreamlo.com/lb/5b61e48e191a8b0bcc77d341/json/10").done(function(r) {
 		console.log('r.dreamlo.leaderboard', r.dreamlo.leaderboard);
 		let highScores = r.dreamlo.leaderboard != null ? r.dreamlo.leaderboard.entry : [];
 		console.log('r', r);
