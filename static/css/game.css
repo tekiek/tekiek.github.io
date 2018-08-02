@@ -1,0 +1,11 @@
+.yearBtn {
+	min-width: 110px;
+}
+
+#middleSection {
+	min-height: 100px;
+}
+
+#highScoresWrapper {
+	max-width: 600px;
+}
