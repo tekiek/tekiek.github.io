@@ -283,7 +283,7 @@ function sendScore() {
 		els.scoreName.parentElement.classList.remove('form-fieldset--error');
 	}
 	
-	scoreRequest.src = "http://dreamlo.com/lb/9DaAZX-cWECSuqpyTwN6Jw-gV6rPE3tkWpYMzWjfwErA/add/" + els.scoreName.value + "/" + gameScore;
+	scoreRequest.src = "https://dreamlo.com/lb/9DaAZX-cWECSuqpyTwN6Jw-gV6rPE3tkWpYMzWjfwErA/add/" + els.scoreName.value + "/" + gameScore;
 	setTimeout(function() {
 		// els.submitScoreWrapper.classList.remove('xs-hide');
 		// getScores();
